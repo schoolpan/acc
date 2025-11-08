@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>會計 BLAST 快答遊戲</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <p class="hero__eyebrow">玩一場 Blast 遊戲！</p>
+      <h1 class="hero__headline">將定義與正確的詞語配對，在計時結束前點擊最多星星，讓你的腦內小行星全數殲滅！</h1>
+      <div class="hero__actions">
+        <button id="playButton" class="btn btn--primary" disabled>開始遊戲</button>
+        <button id="howToButton" class="btn btn--ghost">如何玩 Blast</button>
+      </div>
+    </div>
+    <div class="hero__illustration" aria-hidden="true">
+      <div class="planet"></div>
+      <div class="satellite satellite--one"></div>
+      <div class="satellite satellite--two"></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card upload">
+      <h2>匯入會計題庫 (Excel)</h2>
+      <p>載入 .xlsx 或 .xls 題庫檔案，系統將自動分析欄位，並協助你建立 Blast 快答遊戲。</p>
+      <label class="file-input">
+        <input type="file" id="workbookInput" accept=".xlsx,.xls,.csv" />
+        <span>選擇檔案</span>
+      </label>
+      <div class="upload__status" id="uploadStatus" role="status" aria-live="polite"></div>
+      <div class="mapping" id="mappingControls" hidden>
+        <h3>欄位對應</h3>
+        <p>請確認題幹與正確答案欄位，或依需求調整。</p>
+        <div class="mapping__row">
+          <label for="questionField">題幹欄位</label>
+          <select id="questionField"></select>
+        </div>
+        <div class="mapping__row">
+          <label for="answerField">正確答案欄位</label>
+          <select id="answerField"></select>
+        </div>
+        <div class="mapping__row">
+          <label for="definitionField">定義欄位 (選填)</label>
+          <select id="definitionField"></select>
+        </div>
+      </div>
+      <div class="preview" id="preview" hidden>
+        <h3>資料預覽</h3>
+        <table>
+          <thead>
+            <tr id="previewHead"></tr>
+          </thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card modes" aria-live="polite">
+      <h2>你想如何玩？</h2>
+      <p>選擇希望學生看到哪種問題與答案的組合。</p>
+      <div class="mode-grid">
+        <article class="mode" data-mode="questionToAnswer">
+          <header>
+            <h3>題目 ➜ 答案</h3>
+            <p>題幹顯示題目，選出正確答案。</p>
+          </header>
+          <ul class="mode__preview" id="previewQuestion"></ul>
+          <button class="btn btn--ghost mode__select">選擇</button>
+        </article>
+        <article class="mode" data-mode="answerToQuestion">
+          <header>
+            <h3>答案 ➜ 題目</h3>
+            <p>顯示答案或定義，找出對應題幹。</p>
+          </header>
+          <ul class="mode__preview" id="previewAnswer"></ul>
+          <button class="btn btn--ghost mode__select">選擇</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="card game" id="game" hidden>
+      <header class="game__header">
+        <div>
+          <p class="game__label">剩餘時間</p>
+          <div class="game__timer" id="timer">60</div>
+        </div>
+        <div>
+          <p class="game__label">得分</p>
+          <div class="game__score" id="score">0</div>
+        </div>
+        <div>
+          <p class="game__label">已答題</p>
+          <div class="game__answered" id="answered">0</div>
+        </div>
+      </header>
+      <div class="game__content">
+        <p class="game__prompt" id="prompt"></p>
+        <ul class="choices" id="choices"></ul>
+      </div>
+      <footer class="game__footer">
+        <button class="btn btn--secondary" id="nextButton">下一題</button>
+        <button class="btn btn--ghost" id="resetButton">重新開始</button>
+      </footer>
+    </section>
+
+    <section class="card" id="howTo" hidden>
+      <h2>如何玩 Blast</h2>
+      <ol class="howto">
+        <li>匯入題庫 Excel，確認題幹與答案欄位。</li>
+        <li>選擇遊戲模式，例如「題目 ➜ 答案」或「答案 ➜ 題目」。</li>
+        <li>按下「開始遊戲」啟動倒數計時，點擊正確選項可獲得 100 分。</li>
+        <li>答錯會扣 25 分，但仍可繼續挑戰下一題。</li>
+        <li>倒數結束後顯示總結，按「重新開始」即可再次挑戰。</li>
+      </ol>
+    </section>
+
+    <section class="card summary" id="summary" hidden>
+      <h2>時間到！</h2>
+      <p id="summaryMessage"></p>
+      <button class="btn btn--primary" id="playAgainButton">再玩一次</button>
+    </section>
+  </main>
+
+  <template id="choiceTemplate">
+    <li>
+      <button class="choice"></button>
+    </li>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha256-ESySUdkGFUTkOcJCIZy9FHn5Vf3L7hIwrKyYVJZZ+s=" crossorigin="anonymous"></script>
+  <script src="script.js" type="module"></script>
+</body>
+</html>
