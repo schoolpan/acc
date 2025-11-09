@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>翻牌遊戲單詞卡</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app">
+    <header class="app__header">
+      <h1>翻牌遊戲單詞卡</h1>
+      <p class="app__subtitle">匯入你的詞語表，透過自動播放或隨機模式輕鬆背單字！</p>
+    </header>
+
+    <section class="controls">
+      <div class="controls__group">
+        <label for="fileInput" class="button button--primary">匯入 Excel 檔案</label>
+        <input id="fileInput" type="file" accept=".xlsx,.xls" />
+      </div>
+
+      <div class="controls__group">
+        <label for="directionSelect">顯示方向</label>
+        <select id="directionSelect">
+          <option value="definition-to-term">定義 ➜ 詞語</option>
+          <option value="term-to-definition">詞語 ➜ 定義</option>
+          <option value="mixed">混合</option>
+        </select>
+      </div>
+
+      <div class="controls__group controls__buttons">
+        <button id="playButton" class="button">播放</button>
+        <button id="pauseButton" class="button">暫停</button>
+        <button id="randomButton" class="button">隨機</button>
+        <label for="intervalInput">播放間隔 (秒)</label>
+        <input id="intervalInput" type="number" min="2" value="6" />
+      </div>
+    </section>
+
+    <section class="card-section" aria-live="polite">
+      <div id="card" class="card" tabindex="0">
+        <div class="card__face card__face--front"></div>
+        <div class="card__face card__face--back"></div>
+      </div>
+    </section>
+
+    <nav class="navigation">
+      <button id="prevButton" class="button button--icon" aria-label="上一張">
+        <span aria-hidden="true">◀</span>
+      </button>
+      <span id="progress" class="navigation__progress">0 / 0</span>
+      <button id="nextButton" class="button button--icon" aria-label="下一張">
+        <span aria-hidden="true">▶</span>
+      </button>
+    </nav>
+
+    <section id="status" class="status" role="status" aria-live="polite"></section>
+    <section class="tips">
+      <h2>使用說明</h2>
+      <ul>
+        <li>Excel 第一欄為詞語，第二欄為定義。可在一個檔案中批次匯入。</li>
+        <li>點擊卡片任意處或按下空白鍵即可翻面。</li>
+        <li>使用方向鍵左右鍵或下方箭頭可切換卡片。</li>
+        <li>點擊播放會自動依序顯示卡片，並在一半時間後自動翻面。</li>
+        <li>切換到隨機模式會立即打散卡片順序。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
